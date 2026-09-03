@@ -1,6 +1,8 @@
 # GitHub Status for Herdr
 
-Reports each agent pane's repository status to the Herdr sidebar as one of:
+Reports each agent pane's Git branch and repository status to the Herdr sidebar.
+When a pane has no Git branch, its detected agent name is shown instead.
+Repository status is shown as one of:
 
 - `dirty`
 - `main`
@@ -39,10 +41,10 @@ Add the following to `~/.config/herdr/config.toml`:
 [ui.sidebar.agents]
 rows = [
   ["state_icon", { token = "terminal_title_stripped", fg = "#ffffff", dim = false }],
-  [{ token = "agent", fg = "#7dcfff", dim = false }],
+  [{ token = "$github_branch_or_agent", fg = "#7dcfff", dim = false }],
   [
     { token = "$github_dirty", fg = "#f7768e", bold = true },
-              { token = "$github_main", fg = "#abdfa7", bold = true, dim = false },
+    { token = "$github_main", fg = "#abdfa7", bold = true, dim = false },
     { token = "$github_committed", fg = "#9ece6a" },
     { token = "$github_pr", fg = "#7aa2f7", bold = true },
     { token = "$github_merged", fg = "#bb9af7", bold = true },

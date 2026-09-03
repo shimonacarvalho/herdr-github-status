@@ -19,6 +19,7 @@ readonly STATUSES=(dirty main committed pr merged)
 while IFS= read -r agent_json; do
   pane_id="$(jq -er '.pane_id' <<<"$agent_json")"
   cwd="$(jq -er '.foreground_cwd // .cwd' <<<"$agent_json")"
+  agent_label="$(jq -r '.display_agent // .agent // "agent"' <<<"$agent_json")"
   pr_number=""
 
   if ! git -C "$cwd" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
@@ -26,6 +27,8 @@ while IFS= read -r agent_json; do
       pane report-metadata "$pane_id"
       --source "$SOURCE"
       --clear-token github_status
+      --clear-token github_branch
+      --token "github_branch_or_agent=$agent_label"
     )
     for candidate in "${STATUSES[@]}"; do
       clear_args+=(--clear-token "github_${candidate}_icon")
@@ -35,10 +38,11 @@ while IFS= read -r agent_json; do
     continue
   fi
 
+  branch="$(git -C "$cwd" branch --show-current 2>/dev/null || true)"
+
   if [[ -n "$(git -C "$cwd" status --porcelain 2>/dev/null)" ]]; then
     status="dirty"
   else
-    branch="$(git -C "$cwd" branch --show-current 2>/dev/null)"
     origin_url="$(git -C "$cwd" remote get-url origin 2>/dev/null || true)"
     if [[ "$branch" == "main" ]]; then
       pr_state="MAIN"
@@ -103,6 +107,8 @@ while IFS= read -r agent_json; do
     pane report-metadata "$pane_id"
     --source "$SOURCE"
     --clear-token github_status
+    --clear-token github_branch
+    --token "github_branch_or_agent=${branch:-$agent_label}"
   )
   for candidate in "${STATUSES[@]}"; do
     if [[ "$candidate" != "$status" ]]; then
