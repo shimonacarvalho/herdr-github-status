@@ -1,0 +1,21 @@
+id = "shimona.github-status"
+name = "GitHub Status"
+version = "0.1.0"
+min_herdr_version = "0.8.2"
+description = "Report GitHub lifecycle status for agent sidebar rows"
+platforms = ["macos", "linux"]
+
+[[startup]]
+command = ["bash", "report.sh"]
+
+[[events]]
+on = "pane.agent_detected"
+command = ["bash", "report.sh"]
+
+[[events]]
+on = "pane.agent_status_changed"
+command = ["bash", "report.sh"]
+
+[[events]]
+on = "workspace.focused"
+command = ["bash", "report.sh"]
